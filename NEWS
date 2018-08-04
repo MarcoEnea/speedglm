@@ -1,0 +1,74 @@
+*************************************
+*				    *
+*	Changes in speedglm	    *
+*				    *
+*************************************
+
+===============
+version 0.3-3
+=============== 
+* bug fixing: A bug causing an error with function predict.speedlm() has been fixed. 
+  The error was due to missing levels from the model matrix returned by speedglm() and   
+  speedlm(). Now these are returned.
+* bug fixing: A bug causing an error on summary() when using speedglm.wfit, speedlm.fit 
+  and speedlm.wfit with X-matrix with no columns names has been fixed. 
+* Acknowledgements: the author is grateful to all those users who have reported bugs.
+
+
+===============
+version 0.3-2
+=============== 
+* new wrappers drop1() and add1() also for "speedglm" objects. Now it is possible to use functions step() and stepAIC() for both speedlm and speedglm objects but objects fitted using updateWithMoreData(). Note that these functions have been poorly tested and need to be checked out more carefully.
+* new deviance.speedlm() and deviance.speedglm()
+* logLik.speedglm() and print.logLik.speedglm(): logLik now takes into account the degrees of freedom returned as attribute.
+* speedlm(): minor changes in the code to allow a more efficient calculation involving weights. Thanks to Eliav Schmulewitz for the suggestion.
+* bug fixing: A bug causing the wrong display of the summary for a speedglm object has been fixed. this bug was reported at http://stackoverflow.com/questions/34887295/r-error-using-summary-from-speedglm-package.  
+* bug fixing: A bug causing a wrong display of the asterisk in print.summary.speedlm() has beed fixed.
+* bug fixing: A bug causing an error with function update.speedlm() has been fixed.
+* Acknowledgements: the author is grateful to all those users who have reported bugs.
+
+===============
+version 0.3-1
+=============== 
+* speedlm(), speedglm() and shglm(): now the functions can handle the dot "." in the model formula. Thanks to Mark Wolters.
+* speedlm() and speedglm(): if argument "data" is not provided, a search in the parent.frame environment will be done. 
+* speedlm(), update.speedlm(), updateWithMoreData() and speedglm(): new argument "subset" is provided. By Ronen Meiri and Marco Enea.
+* S3method(extractAIC,speedglm) has been included in NAMESPACE.
+* bug fixing: a bug producing a warning while using update.speedlm() with weights has been fixed.  
+* bug fixing: there were some cases of mismatch between the length of the original response variable from a speedlm object and the length of the fitted values. This bug has been fixed. 
+* bug fixing: a bug causing a coefficient name shift, in the presence of variables removed due to singularity, has been fixed for both speedglm() and shglm(). 
+* Acknowledgements: the author is grateful to all those users who have reported bugs.
+
+===============
+version 0.3
+===============
+* speedglm(), speedglm.wfit() and shglm(): new argument "trace";
+* speedlm() and speedglm(): new arguments "model=FALSE", "y=FALSE", and "fitted=FALSE". 
+  By setting them to TRUE, the speedlm/speedglm object will return the model frame, 
+  the response and the fitted values, respectively. 
+* new wrappers predict.speedlm() and predict.speedglm() with reduced functionalities by Tomer Kalimi and Marco Enea; 
+* new wrappers extractAIC(), drop1() and add1() (for "speedlm" objects only), by Ronen Meiri: 
+  now it is possible to use function stepAIC(), from the package MASS, like for an "lm" object. 
+* speedlm() and speedglm(): method="qr", by Ronen Meiri, has been added to the already existing "eigen" and "Cholesky" options. However the method does not act on matrix X directly, but on X'WX;
+* update.speedlm(): now this is a wrapper calling either updateWithMoreData(), the new name of the old function for updating estimates with additional data, or update.default() to specify a new model formula/data (by Marco Enea and Ronen Meiri)
+* the mantainer"s email address has changed to emarco76@libero.it.
+* bug fixing: a bug concerning the speedlm"s NULL model, as well as the summary, has been fixed;
+* bug fixing: a bug concerning a wrong row-chunk dimension in shglm has been fixed. 
+* Acknowledgements: the author is grateful to all those users who have reported bugs.
+
+
+
+===============
+version 0.2-1.0
+===============
+* a bug concerning the use of argument start in speedglm with sparse matrices has been fixed. Thanks to Micheal Isaiah Love for reporting the problem.
+* a bug concerning arguments start, mustart and etastart in function shglm  has been not fixed yet. Those arguments are currently disabled. These will be fixed (I hope) in the next versions.
+
+
+===============
+version 0.2
+===============
+* the data1 dataset has been added to the package. This permits to run the second example in the help page of speedglm without using a connection to the URL "http://dssm.unipa.it/enea/data1.txt" which could fail.
+* argument data from shglm() changed to datafun.
+* a bug has been fixed using  print.summary.speedlm(). Now the rounding of the t statistic in the output print works correctly.
+* the author's email address has changed
