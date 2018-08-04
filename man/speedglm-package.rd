@@ -12,8 +12,8 @@ of R memory, the fitting is made by an updating algorithm.}
 \tabular{ll}{
 Package: \tab speedglm\cr
 Type: \tab Package\cr
-Version: \tab 0.3-1\cr
-Date: \tab 2015-09-09\cr
+Version: \tab 0.3-3\cr
+Date: \tab 2018-08-04\cr
 Depends: \tab Matrix, stats, MASS\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
