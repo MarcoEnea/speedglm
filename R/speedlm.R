@@ -222,7 +222,10 @@ speedlm <- function(formula, data, weights = NULL, offset = NULL, sparse = NULL,
   if(target) rval$y <- y
   rval$xlevels <- .getXlevels(tf, M)
   class(rval) <- "speedlm"
-  if(fitted) rval$fitted.values <- predict.speedlm(rval,M) 
+  if (fitted) {
+    if (missing(data)) data <- get_all_vars(M)
+    rval$fitted.values <- predict.speedlm(rval, newdata=data)
+  }
   rval$formula <- eval(call[[2]])
   rval
 }

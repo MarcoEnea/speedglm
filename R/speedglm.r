@@ -4,6 +4,7 @@ speedglm <- function(formula,data,family=gaussian(),weights=NULL,start=NULL,
                      method=c('eigen','Cholesky','qr'), model=FALSE, y=FALSE, 
                      fitted=FALSE,...){
   call <- match.call()
+ # browser()
   target <- y
   M <- match.call(expand.dots = FALSE)
   m <- match(c("formula", "data", "subset"), names(M), 0L)
@@ -35,7 +36,10 @@ speedglm <- function(formula,data,family=gaussian(),weights=NULL,start=NULL,
   rval$xlevels <- .getXlevels(tf, M)
   class(rval)<- c("speedglm","speedlm")
   if (model) rval$model <- M
-  if (fitted) rval$linear.predictors <- predict.speedlm(rval, newdata=M)
+  if (fitted) {
+    if (missing(data)) data <- get_all_vars(M)
+    rval$linear.predictors <- predict.speedlm(rval, newdata=data)
+  }
   if (target) rval$y <- y 
   if ((rval$iter==maxit)&(!rval$convergence)) 
     warning("Maximum number of iterations reached without convergence")     
