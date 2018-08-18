@@ -7,11 +7,13 @@
 ===============
 version 0.3-3
 =============== 
+* bug fixing: A bug reported at https://github.com/MarcoEnea/speedglm/issues/1 has been   
+  fixed. 
 * bug fixing: A bug causing an error with function predict.speedlm() has been fixed. 
   The error was due to missing levels from the model matrix returned by speedglm() and   
   speedlm(). Now these are returned.
-* bug fixing: A bug causing an error with function summary() when using speedglm.wfit,  
-  speedlm.fit and speedlm.wfit with X-matrix with no columns names has been fixed. 
+* bug fixing: A bug causing an error on summary() when using speedglm.wfit, speedlm.fit 
+  and speedlm.wfit with X-matrix with no columns names has been fixed. 
 * Acknowledgements: the author is grateful to all those users who have reported bugs.
 
 

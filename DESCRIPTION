@@ -2,7 +2,7 @@ Package: speedglm
 Type: Package
 Title: Fitting Linear and Generalized Linear Models to Large Data Sets
 Version: 0.3-3
-Date: 2018-08-04
+Date: 2018-08-18
 Authors@R: c(person("Marco", "Enea",
                       email="emarco76@libero.it",
 	              role=c("aut", "cre")),
@@ -14,8 +14,5 @@ Depends: Matrix, MASS
 Imports: methods, stats
 Description: Fitting linear models and generalized linear models to large data sets by updating algorithms.
 License: GPL
-URL: http://github.com/MarcoEnea/speedglm
-BugReports: http://github.com/MarcoEnea/speedglm/issues
 LazyLoad: yes
-
 
