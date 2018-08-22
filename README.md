@@ -9,6 +9,8 @@ Users are freely to contribute by reporting bugs and/or providing a bug fix acco
 To install this package on R:
 
 install.packages("devtools")
+
 library(devtools)
+
 install_github("MarcoEnea/speedglm")
 
