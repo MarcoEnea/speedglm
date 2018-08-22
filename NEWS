@@ -7,8 +7,8 @@
 ===============
 version 0.3-3
 =============== 
-* bug fixing: A bug reported at https://github.com/MarcoEnea/speedglm/issues/1 has been   
-  fixed. 
+* new (uncommented) function model.frame.speedglm().  
+* bug fixing: A bug concerning the model offset for speedglm() has been fixed. 
 * bug fixing: A bug causing an error with function predict.speedlm() has been fixed. 
   The error was due to missing levels from the model matrix returned by speedglm() and   
   speedlm(). Now these are returned.

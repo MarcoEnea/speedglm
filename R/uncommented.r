@@ -62,3 +62,11 @@ aic.shglm <- function(family,y, n, mu, wt, dev){
  options(warn=1)
  return(a)
 }
+
+
+model.frame.speedglm <- function (formula, ...) 
+{
+  if (is.null(formula$offset)||is.null(formula$call[["offset"]])) model.frame.default(formula) else
+    if(is.null(formula$model)) cbind(model.frame.default(formula),"(offset)"=formula$offset) else
+      formula$model
+}
