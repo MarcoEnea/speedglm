@@ -70,3 +70,5 @@ model.frame.speedglm <- function (formula, ...)
     if(is.null(formula$model)) cbind(model.frame.default(formula),"(offset)"=formula$offset) else
       formula$model
 }
+
+model.frame.speedlm <- model.frame.speedglm  

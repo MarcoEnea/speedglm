@@ -124,6 +124,7 @@ The memory size of an object of class 'speedglm' is \eqn{O(p^2)}, where \eqn{p} 
   \item{model}{Either NULL or, if \code{model} was previously set to TRUE, the model frame. }  
   \item{y}{Either NULL or, if \code{y} was previously set to TRUE, the response variable. }  
   \item{linear.predictors}{Either NULL or, if \code{fitted} was previously set to TRUE, the fitted values. }    
+  \item{offset}{the model offset.}
 }
 
 \references{Enea, M. (2009) Fitting Linear Models and Generalized Linear Models with large data sets in R.

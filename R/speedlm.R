@@ -65,13 +65,13 @@ speedlm.fit <- function(y, X, intercept = FALSE, offset = NULL, row.chunk = NULL
       else "(Intercept)"
     } else paste("V",1:length(coefficients),sep="")
   } else col.names
-
   dfr <- nrow(X) - ris$rank
   rval <- list(coefficients = coefficients, coef = coef, df.residual = dfr, 
                XTX = as(ris$XTX, "matrix"), Xy = Xy, nobs = nrow(X), 
                nvar = nvar, ok = ok, A = as(A, "matrix"), RSS = as.numeric(RSS), 
                rank = ris$rank, pivot = ris$pivot, sparse = sparse, 
-               yy = yy, X1X = X1X, intercept = intercept,method=method)
+               yy = yy, X1X = X1X, intercept = intercept,method=method,
+               offset=offset)
   class(rval) <- "speedlm"
   rval
 }
@@ -166,7 +166,8 @@ speedlm.wfit <- function(y, X, w, intercept = FALSE, offset = NULL, row.chunk = 
                nobs = nrow(X), nvar = nvar, ok = ok, A = as(A, "matrix"), 
                RSS = as.numeric(RSS), rank = ris$rank, pivot = ris$pivot, 
                sparse = sparse, yy = yy, X1X = X1X, SW = SW, XW1 = XW1, 
-               zero.w = zero.w, pw = pw, intercept = intercept,method=method)
+               zero.w = zero.w, pw = pw, intercept = intercept,
+               method=method, offset=offset)
   class(rval) <- "speedlm"
   rval
 }	
@@ -179,7 +180,8 @@ speedlm <- function(formula, data, weights = NULL, offset = NULL, sparse = NULL,
   target <- y
   call <- match.call()
   M <- match.call(expand.dots = FALSE)
-  m <- match(c("formula", "data", "subset"), names(M), 0L)
+  m <- match(c("formula", "data", "subset", "weights", "na.action", 
+               "offset"), names(M), 0L)
   M <- M[c(1L, m)]
   M$drop.unused.levels <- TRUE
   M[[1L]] <- quote(stats::model.frame)
@@ -238,16 +240,16 @@ formula.speedlm <- function (x, ...)
 }
 
 update.speedlm <- function(object, formula, data, add=TRUE, evaluate=TRUE, 
-                           subset=NULL, ...) {
+                           subset=NULL, offset=NULL, weights=NULL,...) {
   if (!inherits(object, "speedlm")) 
     stop("object must be of class speedlm")
   if ((!missing(formula))&(!missing(data))&(add)) 
     stop('cannot specify a formula while adding new data')
   if ((!missing(data))&(add)) {
-    mod <- updateWithMoreData(object, data, subset, formula=formula.speedlm(object),...) }
+    mod <- updateWithMoreData(object, data=data, subset=subset, formula=formula.speedlm(object), offset=offset, weights=weights,...) }
   else{
-   mod <- if (missing(data)) update.default(object, formula, evaluate=evaluate,...) else 
-      update.default(object, formula, data=data, evaluate=evaluate,subset=subset, ...)
+   mod <- if (missing(data)) update.default(object, formula, evaluate=evaluate, offset=offset, weights=weights,...) else 
+      update.default(object, formula, data=data, evaluate=evaluate,subset=subset,offset=offset, weights=weights,...)
   }  
   mod
 }
@@ -262,12 +264,14 @@ updateWithMoreData <- function(object, data, weights = NULL, offset = NULL,
   M <- match.call(expand.dots = F)
   formula <- eval(object$call[[2]])
   M$formula <- formula 
-  m <- match(c("formula", "data", "subset"), names(M), 0L)
+  m <- match(c("formula", "data", "subset", "weights", "na.action", 
+               "offset"), names(M), 0L)
   M <- M[c(1L, m)]
   M$drop.unused.levels <- TRUE
   M[[1L]] <- quote(stats::model.frame)
+  #browser()
   M <- eval(M, parent.frame())
-  y <- M[[1]]    
+  y <- M[[1]]   
   set <- list(sparselim = 0.9, camp = 0.01, eigendec = TRUE, 
               row.chunk = NULL, tol.solve = .Machine$double.eps, tol.values = 1e-07, 
               tol.vectors = 1e-07, method = object$method)
@@ -288,11 +292,11 @@ updateWithMoreData <- function(object, data, weights = NULL, offset = NULL,
       flevels[[j]] <- a
     }
     if (!is.null(subset)){
-      M <- model.frame(formula, data, subset=subset, drop.unused.levels=T,xlev = flevels)
+      M <- model.frame(formula, data, subset=subset, drop.unused.levels=T,xlev = flevels,offset=offset)
       X <- model.matrix(formula, M)
       object$levels <- flevels
    } else {
-     M <- model.frame(formula, data, xlev = flevels)
+     M <- model.frame(formula, data, xlev = flevels,offset=offset)
      X <- model.matrix(formula, M, xlev = flevels)
      object$levels <- flevels
    }
@@ -304,7 +308,9 @@ updateWithMoreData <- function(object, data, weights = NULL, offset = NULL,
     sum(log(weights[weights != 0])) + object$pw
   w <- weights
   zero.w <- sum(w == 0)
+  #browsr()
   offset <- model.offset(M)
+  y <- y - offset 
   colnam <- colnames(X)
   if (is.null(sparse)) 
     sparse <- is.sparse(X = X, set$sparselim, set$camp)
@@ -386,7 +392,8 @@ updateWithMoreData <- function(object, data, weights = NULL, offset = NULL,
                A = as(A,"matrix"), nobs = object$nobs + nrow(X), RSS = as.numeric(RSS), 
                rank = rank, ok = ok, nvar = nvar, weights = weights, 
                zero.w = zero.w + object$zero.w, pw = pw, XTX = as(XTX,"matrix"), 
-               sparse = sparse, "intercept"=object$intercept,method=set$method)
+               sparse = sparse, "intercept"=object$intercept,method=set$method,
+               offset=offset)
   rval$terms <- object$terms
   rval$call <- call
   rval$levels <- flevels
