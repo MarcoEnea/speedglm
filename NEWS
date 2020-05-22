@@ -7,6 +7,7 @@
 ===============
 version 0.3-3
 =============== 
+* bug fixing: A bug concerning wrong correlation matrix for speedglm() has been fixed. 
 * new (uncommented) functions model.frame.speedlm() and model.frame.speedglm().  
 * bug fixing: A bug concerning the model offset for speedlm(), update.speedlm() and 	
   speedglm() has been fixed. 

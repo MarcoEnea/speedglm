@@ -66,8 +66,7 @@ summary.speedglm <- function (object, correlation = FALSE, ...)
                               correlation = correlation, cov.unscaled = inv, cov.scaled = inv * 
                                 var_res))
   if (correlation) {
-    ans$correl <- (inv * var_res)/outer(na.omit(se_coef), 
-                                        na.omit(se_coef))
+    ans$correl <- inv/outer(na.omit(se_coef), na.omit(se_coef))
   }
   class(ans) <- "summary.speedglm"
   return(ans)
