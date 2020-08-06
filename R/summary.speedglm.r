@@ -19,33 +19,14 @@ summary.speedglm <- function (object, correlation = FALSE, ...)
     t1 <- z$coefficients/se_coef
     p <- 2 * pt(abs(t1), df = z$df, lower.tail = FALSE)
   }
-  ip <- !is.na(p)
-  p[ip] <- as.numeric(format(p[ip], digits = 3))
   dn <- c("Estimate", "Std. Error")
   if (z$family$family %in% c("binomial", "poisson")) {
-    format.coef <- if (any(na.omit(abs(z$coef)) < 1e-04)) 
-      format(z$coefficients, scientific = TRUE, digits = 4) else 
-        round(z$coefficients, digits = 7)
-    format.se <- if (any(na.omit(se_coef) < 1e-04)) 
-      format(se_coef, scientific = TRUE, digits = 4) else round(se_coef, digits = 7)
-    format.pv <- if (any(na.omit(p) < 1e-04)) 
-      format(p, scientific = TRUE, digits = 4) else round(p, digits = 4)
-    param <- data.frame(format.coef, format.se, round(z1, 
-                                                      digits = 4), format.pv)
+    
+    param <- data.frame(z$coefficients, se_coef, z1,p)
     dimnames(param) <- list(names(z$coefficients), c(dn, 
                                                      "z value", "Pr(>|z|)"))
   } else {
-    format.coef <- if (any(abs(na.omit(z$coefficients)) < 
-                           1e-04)) 
-      format(z$coefficients, scientific = TRUE, digits = 4) else 
-        round(z$coefficients, digits = 7)
-    format.se <- if (any(na.omit(se_coef) < 1e-04)) 
-      format(se_coef, scientific = TRUE, digits = 4) else 
-        round(se_coef, digits = 7)
-    format.pv <- if (any(na.omit(p) < 1e-04)) 
-      format(p, scientific = TRUE, digits = 4) else round(p, digits = 4)
-    param <- data.frame(format.coef, format.se, round(t1, 
-                                                      digits = 4), format.pv)
+    param <- data.frame(z$coefficients, se_coef, t1,p)
     dimnames(param) <- list(names(z$coefficients), c(dn, 
                                                      "t value", "Pr(>|t|)"))
   }
@@ -66,10 +47,95 @@ summary.speedglm <- function (object, correlation = FALSE, ...)
                               correlation = correlation, cov.unscaled = inv, cov.scaled = inv * 
                                 var_res))
   if (correlation) {
-    ans$correl <- inv/outer(na.omit(se_coef), na.omit(se_coef))
+    ans$correl <- (inv * var_res)/outer(na.omit(se_coef), 
+                                        na.omit(se_coef))
   }
   class(ans) <- "summary.speedglm"
   return(ans)
+}
+
+
+
+print.summary.speedglm <- function (x, digits = max(3, getOption("digits") - 3), ...) 
+{
+  
+  x$coefficients$"Estimate" <- if (any(na.omit(abs(x$coefficients$"Estimate")) < 1e-04)) 
+    format(x$coefficients$"Estimate", scientific = TRUE, digits = 4)
+  else round(x$coefficients$"Estimate", digits = 7)
+  x$coefficients$"Std. Error" <- if (any(na.omit(x$coefficients$"Std. Error") < 1e-04)) 
+    format(x$coefficients$"Std. Error", scientific = TRUE, digits = 4)
+  else round(x$coefficients$"Std. Error", digits = 7)
+  if (x$family$family %in% c("binomial", "poisson")) {
+    x$coefficients$"z value" <- round(x$coefficients$"z value", digits = 4)
+    ip <- !is.na(x$coefficients$"Pr(>|z|)")
+    x$coefficients$"Pr(>|z|)"[ip] <- as.numeric(format(x$coefficients$"Pr(>|z|)"[ip], digits = 3))  
+    x$coefficients$"Pr(>|z|)" <- if (any(na.omit(x$coefficients$"Pr(>|z|)") < 1e-04)) 
+      format(x$coefficients$"Pr(>|z|)", scientific = TRUE, digits = 4)
+    else round(x$coefficients$"Pr(>|z|)", digits = 4)
+  }
+  else {
+    x$coefficients$"t value" <- round(x$coefficients$"t value", digits = 4)
+    ip <- !is.na(x$coefficients$"Pr(>|t|)")
+    x$coefficients$"Pr(>|t|)"[ip] <- as.numeric(format(x$coefficients$"Pr(>|t|)"[ip], digits = 3))  
+    x$coefficients$"Pr(>|t|)" <- if (any(na.omit(x$coefficients$"Pr(>|t|)") < 1e-04)) 
+      format(x$coefficients$"Pr(>|t|)", scientific = TRUE, digits = 4)
+    else round(x$coefficients$"Pr(>|t|)", digits = 4)
+  }
+  
+  cat("Generalized Linear Model of class 'speedglm':\n")
+  if (!is.null(x$call)) 
+    cat("\nCall: ", deparse(x$call), "\n\n")
+  if (length(x$coef)) {
+    cat("Coefficients:\n")
+    cat(" ------------------------------------------------------------------", 
+        "\n")
+    sig <- function(z){
+      if (!is.na(z)){
+        if (z < 0.001) 
+          "***"
+        else if (z < 0.01) 
+          "** "
+        else if (z < 0.05) 
+          "*  "
+        else if (z < 0.1) 
+          ".  "
+        else "   "
+      } else "   "
+    }
+    options(warn=-1)
+    sig.1 <- sapply(as.numeric(as.character(x$coefficients[,4])), 
+                    sig)
+    options(warn=0)
+    est.1 <- cbind(format(x$coefficients, digits = digits), 
+                   sig.1)
+    colnames(est.1)[ncol(est.1)] <- ""
+    print(est.1)
+    cat("\n")
+    cat("-------------------------------------------------------------------", 
+        "\n")
+    cat("Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1", 
+        "\n")
+    cat("\n")
+  }
+  else cat("No coefficients\n")
+  cat("---\n")
+  cat("null df: ", x$nulldf, "; null deviance: ", round(x$nulldev, 
+                                                        digits = 2), ";\n", "residuals df: ", x$df, "; residuals deviance: ", 
+      round(x$deviance, digits = 2), ";\n", "# obs.: ", x$n, 
+      "; # non-zero weighted obs.: ", x$ngoodobs, ";\n", "AIC: ", 
+      x$aic, "; log Likelihood: ", x$logLik, ";\n", "RSS: ", 
+      round(x$RSS, digits = 1), "; dispersion: ", x$dispersion, 
+      "; iterations: ", x$iter, ";\n", "rank: ", round(x$rank, 
+                                                       digits = 1), "; max tolerance: ", format(x$tol, scientific = TRUE, 
+                                                                                                digits = 3), "; convergence: ", x$convergence, ".\n", 
+      sep = "")
+  invisible(x)
+  if (x$correlation) {
+    cat("---\n")
+    cat("Correlation of Coefficients:\n")
+    x$correl[upper.tri(x$correl, diag = TRUE)] <- NA
+    print(x$correl[-1, -nrow(x$correl)], na.print = "", digits = 2)
+  }
 }
 
 print.summary.speedglm <- function (x, digits = max(3, getOption("digits") - 3), ...) 
