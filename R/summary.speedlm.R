@@ -72,7 +72,7 @@ print.summary.speedlm <- function(x,digits=max(3,getOption("digits")-3),...){
     format(x$coefficients$p.value,scientific=TRUE,
            digits=4) else round(x$coefficients$p.value,
                                 digits=6)
-  s<-sum(Vectorize(is.na(x$coefficients$coef)))
+  s<-sum(is.na(x$coefficients$coef))
   cat("Linear Regression Model of class 'speedlm':\n")  
   if (!is.null(x$call)) cat("\nCall: ", deparse(x$call), "\n\n")  
   if (length(x$coef)) {

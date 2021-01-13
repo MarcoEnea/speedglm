@@ -308,8 +308,8 @@ updateWithMoreData <- function(object, data, weights = NULL, offset = NULL,
     sum(log(weights[weights != 0])) + object$pw
   w <- weights
   zero.w <- sum(w == 0)
-  #browsr()
   offset <- model.offset(M)
+  if (is.null(offset)) offset <- rep(0, length(y))
   y <- y - offset 
   colnam <- colnames(X)
   if (is.null(sparse)) 

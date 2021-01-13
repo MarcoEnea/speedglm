@@ -101,7 +101,7 @@ speedglm.wfit <- function (y, X, intercept = TRUE, weights = NULL, row.chunk = N
     mu <- linkinv(eta)
   }
   iter <- 0
-  dev <- sum(dev.resids(y, mu, weights))
+  dev <- sum(dev.resids(y, c(mu), weights))
   tol <- 1
   if ((fam == "gaussian") & (link == "identity")) 
     maxit <- 1
@@ -145,7 +145,7 @@ speedglm.wfit <- function (y, X, intercept = TRUE, weights = NULL, row.chunk = N
       drop(X %*% start)
     else drop(tcrossprod(X, t(start)))
     mu <- linkinv(eta <- eta + offset)
-    dev <- sum(dev.resids(y, mu, weights))
+    dev <- sum(dev.resids(y, c(mu), weights))
     tol <- max(abs(dev0 - dev)/(abs(dev) + 0.1))
     if (trace) 
       cat("iter", iter, "tol", tol, "\n")
@@ -154,7 +154,7 @@ speedglm.wfit <- function (y, X, intercept = TRUE, weights = NULL, row.chunk = N
   wtdmu <- if (intercept) 
     sum(weights * y)/wt
   else linkinv(offset)
-  nulldev <- sum(dev.resids(y, wtdmu, weights))
+  nulldev <- sum(dev.resids(y, c(wtdmu), weights))
   n.ok <- nobs - sum(weights == 0)
   nulldf <- n.ok - as.integer(intercept)
   rank <- ris$rank
@@ -305,7 +305,7 @@ shglm <- function(formula, datafun, family = gaussian(), weights.fo = NULL,
         }
       }
       if (trace) cat("iter",iter,"elaborating chunk",iter2,"dim",dim(X),"\n")
-      dev <- dev + sum(dev.resids(y, mu, weights))
+      dev <- dev + sum(dev.resids(y, c(mu), weights))
       if (iter>1) aic.model <- aic.model + aic.shglm(fam,y,wt,mu,weights,dev.prec)
       varmu <- variance(mu)
       mu.eta.val <- mu.eta(eta)
@@ -379,7 +379,7 @@ shglm <- function(formula, datafun, family = gaussian(), weights.fo = NULL,
       }
       if (iter == 2) {
         wtdmu <- if (intercept) wy/wt  else linkinv(offset)
-        nulldev <- nulldev + sum(dev.resids(y, wtdmu, weights))
+        nulldev <- nulldev + sum(dev.resids(y, c(wtdmu), weights))
       }
     }
   }
