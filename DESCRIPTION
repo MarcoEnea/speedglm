@@ -2,7 +2,7 @@ Package: speedglm
 Type: Package
 Title: Fitting Linear and Generalized Linear Models to Large Data Sets
 Version: 0.3-3
-Date: 2020-08-06
+Date: 2020-12-09
 Authors@R: c(person("Marco", "Enea",
                       email="emarco76@libero.it",
 	              role=c("aut", "cre")),
