@@ -1,10 +1,33 @@
-summary.speedglm <- function (object, correlation = FALSE, ...) 
+summary.speedglm <- function (object, dispersion = NULL, correlation = FALSE, ...) 
 {
   if (!inherits(object, "speedglm")) 
     stop("object is not of class speedglm")
   z <- object
+  df.r <- object$df
   var_res <- as.numeric(z$RSS/z$df)
-  dispersion <- if (z$family$family %in% c("poisson", "binomial")) 1 else var_res
+  #var_res <- sum((object$weights * object$residuals^2)[object$weights > 
+  #                                            0])/df.r
+  if (is.null(dispersion)) {
+    fam <- object$family
+    dispersion <- if (!is.null(fam$dispersion) && !is.na(fam$dispersion)) 
+      fam$dispersion
+    else if (z$family$family %in% c("poisson", "binomial")) 
+      1
+    else if (df.r > 0) {
+      est.disp <- TRUE
+      if (any(object$weights == 0)) 
+        warning("observations with zero weight not used for calculating dispersion")
+      var_res
+      #sum((object$weights * object$residuals^2)[object$weights > 
+      #                                            0])/df.r
+    }
+    else {
+      est.disp <- TRUE
+      NaN
+    }
+  }
+  
+  #dispersion <- if (z$family$family %in% c("poisson", "binomial")) 1 else var_res
   if (z$method == "qr") {
     z$XTX <- z$XTX[z$ok, z$ok]
   }
